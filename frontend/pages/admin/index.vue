@@ -59,7 +59,8 @@ const agendamentos = ref<any[]>([])
 const fetchDados = async () => {
   loading.value = true
   try {
-    const res = await $fetch<any[]>('http://localhost:8080/api/admin/agendamentos')
+    const config = useRuntimeConfig()
+    const res = await $fetch<any[]>(`${config.public.apiBase}/admin/agendamentos`)
     agendamentos.value = res.sort((a,b) => new Date(a.horarioInicio).getTime() - new Date(b.horarioInicio).getTime())
   } catch (error) {
     console.error(error)

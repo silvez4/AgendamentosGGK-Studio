@@ -140,7 +140,8 @@ onMounted(async () => {
   
   // Buscar config do serviço atual p mostrar cabecalho
   try {
-    const list = await $fetch<any[]>('http://localhost:8080/api/public/servicos')
+    const config = useRuntimeConfig()
+    const list = await $fetch<any[]>(`${config.public.apiBase}/public/servicos`)
     servico.value = list.find(s => s.id === route.params.id)
   } catch(e) {}
 })
@@ -159,7 +160,8 @@ const buscarHorarios = async () => {
   slots.value = []
   
   try {
-    const res = await $fetch<string[]>('http://localhost:8080/api/public/agendamentos/disponibilidade', {
+    const config = useRuntimeConfig()
+    const res = await $fetch<string[]>(`${config.public.apiBase}/public/agendamentos/disponibilidade`, {
       params: { servicoId: route.params.id, data: dataEscolhida.value }
     })
     slots.value = res
@@ -215,7 +217,8 @@ const efetuarAgendamento = async () => {
       telefoneCliente: localUser.value.telefone
     }
 
-    await $fetch('http://localhost:8080/api/public/agendamentos', {
+    const config = useRuntimeConfig()
+    await $fetch(`${config.public.apiBase}/public/agendamentos`, {
       method: 'POST',
       body: payload
     })

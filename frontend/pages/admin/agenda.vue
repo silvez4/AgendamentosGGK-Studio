@@ -86,6 +86,17 @@
 
 <script setup lang="ts">
 import Swal from 'sweetalert2'
+import { getAuth } from 'firebase/auth'
+
+const getAuthHeaders = async () => {
+  const { $auth } = useNuxtApp()
+  const auth = $auth as ReturnType<typeof getAuth>
+  if (auth.currentUser) {
+    const token = await auth.currentUser.getIdToken()
+    return { Authorization: `Bearer ${token}` }
+  }
+  return {}
+}
 
 definePageMeta({ layout: 'admin', middleware: ['admin'] })
 
@@ -120,7 +131,9 @@ const removerJanelaExc = (exc: any, index: number) => exc.janelasDisponiveis.spl
 
 const fetchData = async () => {
   try {
-    const res = await $fetch<any>('http://localhost:8080/api/admin/config-agenda')
+    const config = useRuntimeConfig()
+    const headers = await getAuthHeaders()
+    const res = await $fetch<any>(`${config.public.apiBase}/admin/config-agenda`, { headers })
     if (res && res.diasSemana) diasSemana.value = res.diasSemana
     if (res && res.excecoes) excecoes.value = res.excecoes
   } catch (error: any) {
@@ -137,8 +150,11 @@ const saveConfig = async () => {
       diasSemana: diasSemana.value,
       excecoes: excecoes.value
     }
-    await $fetch('http://localhost:8080/api/admin/config-agenda', {
+    const config = useRuntimeConfig()
+    const headers = await getAuthHeaders()
+    await $fetch(`${config.public.apiBase}/admin/config-agenda`, {
       method: 'POST',
+      headers,
       body: payload
     })
     Swal.fire({ title: 'Salvo!', text: 'Agenda atualizada com scuesso.', icon: 'success', timer: 1500, showConfirmButton: false })

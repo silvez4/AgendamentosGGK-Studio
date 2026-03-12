@@ -93,7 +93,8 @@ const loading = ref(true)
 
 const fetchServicos = async () => {
   try {
-    const res = await $fetch<any[]>('http://localhost:8080/api/public/servicos')
+    const config = useRuntimeConfig()
+    const res = await $fetch<any[]>(`${config.public.apiBase}/public/servicos`)
     servicos.value = res
   } catch (e) {
     console.error(e)
