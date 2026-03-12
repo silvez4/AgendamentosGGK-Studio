@@ -1,0 +1,39 @@
+# IDEs and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Node & Nuxt (Frontend)
+frontend/node_modules/
+frontend/.nuxt/
+frontend/.output/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+frontend/coverage/
+frontend/npm-debug.log
+frontend/yarn-error.log
+
+# Java & Spring Boot (Backend)
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/build/
+backend/out/
+backend/*.class
+backend/*.log
+backend/application-dev.properties
+backend/application-prod.properties
+backend/.env
+
+# Security / Secrets
+*.pem
+*.key
+*.cert
+*.p12
+*.jks
+secret.json
+firebase-admin.json
+google-services.json

@@ -1,1 +1,0 @@
-export { default } from "file:///C:/Users/User/Desktop/Projetos/Agendamentos/frontend/node_modules/@nuxt/vite-builder/dist/vite-node-entry.mjs"
