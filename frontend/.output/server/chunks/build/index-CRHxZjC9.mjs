@@ -1,0 +1,73 @@
+import { _ as __nuxt_component_0 } from './nuxt-link-1zmR3BSW.mjs';
+import { defineComponent, ref, mergeProps, unref, withCtx, createTextVNode, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrInterpolate, ssrRenderList, ssrRenderComponent } from 'vue/server-renderer';
+import '../_/nitro.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'node:url';
+import './server.mjs';
+import '../routes/renderer.mjs';
+import 'vue-bundle-renderer/runtime';
+import 'unhead/server';
+import 'devalue';
+import 'unhead/utils';
+import 'vue-router';
+
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "index",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const servicos = ref([]);
+    const loading = ref(true);
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "space-y-8" }, _attrs))}><div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 sm:p-12 text-white shadow-lg relative overflow-hidden"><div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white opacity-10"></div><div class="absolute bottom-0 right-32 -mb-16 w-48 h-48 rounded-full bg-white opacity-10"></div><div class="relative z-10"><h2 class="text-3xl sm:text-5xl font-extrabold mb-4 drop-shadow-sm">Agende sua consulta</h2><p class="text-lg sm:text-xl text-blue-100 max-w-2xl font-medium"> Escolha o serviço desejado abaixo e marque seu horário com facilidade e rapidez. </p></div></div><div class="flex items-center justify-between pb-2 border-b"><h3 class="text-2xl font-bold text-gray-800">Serviços Disponíveis</h3><span class="text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full text-sm">${ssrInterpolate(unref(servicos).length)} Ativos </span></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`);
+      if (unref(loading)) {
+        _push(`<!--[-->`);
+        ssrRenderList(3, (i) => {
+          _push(`<div class="bg-white border rounded-xl p-6 h-40 animate-pulse"><div class="h-6 bg-gray-200 rounded w-1/2 mb-4"></div><div class="h-4 bg-gray-200 rounded w-1/3 mb-2"></div><div class="h-4 bg-gray-200 rounded w-1/4"></div></div>`);
+        });
+        _push(`<!--]-->`);
+      } else if (unref(servicos).length === 0) {
+        _push(`<div class="col-span-full py-12 text-center text-gray-400 bg-gray-50 rounded-xl border border-dashed"><p class="text-lg font-medium">Nenhum serviço disponível no momento.</p></div>`);
+      } else {
+        _push(`<!--[-->`);
+        ssrRenderList(unref(servicos), (servico) => {
+          _push(`<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden"><div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150"></div><div class="relative z-10 mb-6"><h3 class="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors mb-2">${ssrInterpolate(servico.nome)}</h3><div class="flex items-center text-gray-500 text-sm space-x-4"><span class="flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${ssrInterpolate(servico.duracaoMinutos)} min</span></div></div><div class="relative z-10 flex items-center justify-between mt-auto"><div class="flex flex-col"><span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Investimento</span><span class="text-2xl font-extrabold text-gray-800">${ssrInterpolate(servico.moeda)} ${ssrInterpolate(servico.preco?.toFixed(2))}</span></div>`);
+          _push(ssrRenderComponent(_component_NuxtLink, {
+            to: `/agendar/${servico.id}`,
+            class: "bg-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-blue-500/30 hover:bg-blue-700 hover:shadow-blue-600/40 active:scale-95 transition-all"
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(` Agendar `);
+              } else {
+                return [
+                  createTextVNode(" Agendar ")
+                ];
+              }
+            }),
+            _: 2
+          }, _parent));
+          _push(`</div></div>`);
+        });
+        _push(`<!--]-->`);
+      }
+      _push(`</div></div>`);
+    };
+  }
+});
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/index.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+
+export { _sfc_main as default };
+//# sourceMappingURL=index-CRHxZjC9.mjs.map

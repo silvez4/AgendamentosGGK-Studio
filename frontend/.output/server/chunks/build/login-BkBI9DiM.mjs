@@ -1,0 +1,30 @@
+import { defineComponent, ref, mergeProps, unref, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderAttr, ssrIncludeBooleanAttr } from 'vue/server-renderer';
+
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "login",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const email = ref("");
+    const password = ref("");
+    const loading = ref(false);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans text-gray-900" }, _attrs))}><div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8"><div class="text-center mb-8"><h2 class="text-3xl font-extrabold text-blue-600">Admin Login</h2><p class="text-gray-500 mt-2 text-sm">Acesse o painel para gerenciar os agendamentos</p></div><form class="space-y-5"><div><label class="block text-sm font-medium text-gray-700">Email Administrativo</label><input${ssrRenderAttr("value", unref(email))} type="email" required placeholder="admin@exemplo.com" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label class="block text-sm font-medium text-gray-700">Senha</label><input${ssrRenderAttr("value", unref(password))} type="password" required placeholder="••••••••" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><button type="submit"${ssrIncludeBooleanAttr(unref(loading)) ? " disabled" : ""} class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50">`);
+      if (!unref(loading)) {
+        _push(`<span>Entrar</span>`);
+      } else {
+        _push(`<span>Autenticando...</span>`);
+      }
+      _push(`</button></form></div></div>`);
+    };
+  }
+});
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/admin/login.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+
+export { _sfc_main as default };
+//# sourceMappingURL=login-BkBI9DiM.mjs.map
