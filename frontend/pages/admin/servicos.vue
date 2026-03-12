@@ -85,9 +85,10 @@
 import Swal from 'sweetalert2'
 import { getAuth } from 'firebase/auth'
 
+const config = useRuntimeConfig()
+
 const getAuthHeaders = async () => {
-  const { $auth } = useNuxtApp()
-  const auth = $auth as ReturnType<typeof getAuth>
+  const auth = getAuth()
   if (auth.currentUser) {
     const token = await auth.currentUser.getIdToken()
     return { Authorization: `Bearer ${token}` }
@@ -116,7 +117,6 @@ const form = ref({
 const fetchServicos = async () => {
   loading.value = true
   try {
-    const config = useRuntimeConfig()
     const headers = await getAuthHeaders()
     const res = await $fetch<any[]>(`${config.public.apiBase}/admin/servicos`, { headers })
     servicos.value = res
@@ -139,7 +139,6 @@ const openModal = (item: any) => {
 const saveItem = async () => {
   showModal.value = false
   try {
-    const config = useRuntimeConfig()
     const headers = await getAuthHeaders()
     if (form.value.id) {
       await $fetch(`${config.public.apiBase}/admin/servicos/${form.value.id}`, {
@@ -175,7 +174,6 @@ const deleteItem = async (id: string) => {
   
   if (confirm.isConfirmed) {
     try {
-      const config = useRuntimeConfig()
       const headers = await getAuthHeaders()
       await $fetch(`${config.public.apiBase}/admin/servicos/${id}`, { method: 'DELETE', headers })
       Swal.fire({ title: 'Deletado!', icon: 'success', timer: 1500, showConfirmButton: false })

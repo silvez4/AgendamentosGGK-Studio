@@ -88,12 +88,12 @@
 </template>
 
 <script setup lang="ts">
+const config = useRuntimeConfig()
 const servicos = ref<any[]>([])
 const loading = ref(true)
 
 const fetchServicos = async () => {
   try {
-    const config = useRuntimeConfig()
     const res = await $fetch<any[]>(`${config.public.apiBase}/public/servicos`)
     servicos.value = res
   } catch (e) {

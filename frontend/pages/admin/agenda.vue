@@ -88,9 +88,10 @@
 import Swal from 'sweetalert2'
 import { getAuth } from 'firebase/auth'
 
+const config = useRuntimeConfig()
+
 const getAuthHeaders = async () => {
-  const { $auth } = useNuxtApp()
-  const auth = $auth as ReturnType<typeof getAuth>
+  const auth = getAuth()
   if (auth.currentUser) {
     const token = await auth.currentUser.getIdToken()
     return { Authorization: `Bearer ${token}` }
@@ -131,7 +132,6 @@ const removerJanelaExc = (exc: any, index: number) => exc.janelasDisponiveis.spl
 
 const fetchData = async () => {
   try {
-    const config = useRuntimeConfig()
     const headers = await getAuthHeaders()
     const res = await $fetch<any>(`${config.public.apiBase}/admin/config-agenda`, { headers })
     if (res && res.diasSemana) diasSemana.value = res.diasSemana
@@ -150,7 +150,6 @@ const saveConfig = async () => {
       diasSemana: diasSemana.value,
       excecoes: excecoes.value
     }
-    const config = useRuntimeConfig()
     const headers = await getAuthHeaders()
     await $fetch(`${config.public.apiBase}/admin/config-agenda`, {
       method: 'POST',

@@ -118,6 +118,7 @@
 import Swal from 'sweetalert2'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const { localUser, initLocalUser, saveLocalUser } = useUser()
 
 const hoje = new Date().toISOString().split('T')[0]
@@ -140,7 +141,6 @@ onMounted(async () => {
   
   // Buscar config do serviço atual p mostrar cabecalho
   try {
-    const config = useRuntimeConfig()
     const list = await $fetch<any[]>(`${config.public.apiBase}/public/servicos`)
     servico.value = list.find(s => s.id === route.params.id)
   } catch(e) {}
@@ -160,7 +160,6 @@ const buscarHorarios = async () => {
   slots.value = []
   
   try {
-    const config = useRuntimeConfig()
     const res = await $fetch<string[]>(`${config.public.apiBase}/public/agendamentos/disponibilidade`, {
       params: { servicoId: route.params.id, data: dataEscolhida.value }
     })
@@ -217,7 +216,6 @@ const efetuarAgendamento = async () => {
       telefoneCliente: localUser.value.telefone
     }
 
-    const config = useRuntimeConfig()
     await $fetch(`${config.public.apiBase}/public/agendamentos`, {
       method: 'POST',
       body: payload
