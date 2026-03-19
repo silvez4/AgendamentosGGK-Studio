@@ -14,15 +14,19 @@ public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
         try {
+            GoogleCredentials credentials;
             InputStream serviceAccount = getClass().getResourceAsStream("/serviceAccountKey.json");
 
-            if (serviceAccount == null) {
-                System.err.println("serviceAccountKey.json not found in resources!");
-                return;
+            if (serviceAccount != null) {
+                System.out.println("Local Firebase Credentials found.");
+                credentials = GoogleCredentials.fromStream(serviceAccount);
+            } else {
+                System.out.println("Using Google Cloud Application Default Credentials.");
+                credentials = GoogleCredentials.getApplicationDefault();
             }
 
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(credentials)
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
@@ -30,6 +34,7 @@ public class FirebaseConfig {
                 System.out.println("Firebase Admin SDK initialized successfully.");
             }
         } catch (Exception e) {
+            System.err.println("Error initializing Firebase: " + e.getMessage());
             e.printStackTrace();
         }
     }
