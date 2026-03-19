@@ -78,6 +78,7 @@
                   <v-chip size="small" :color="a.status === 'CANCELADO' ? 'error' : 'success'" variant="tonal" class="font-weight-bold">{{ a.status }}</v-chip>
                 </td>
                 <td class="text-right">
+                  <v-btn color="success" variant="text" size="small" icon="mdi-whatsapp" class="mr-2" @click="enviarWhatsapp(a)" title="Contatar via WhatsApp"></v-btn>
                   <v-btn v-if="a.status !== 'CANCELADO'" color="error" variant="text" size="small" icon="mdi-cancel" @click="cancelarAgendamento(a.id)" title="Cancelar Agendamento"></v-btn>
                 </td>
               </tr>
@@ -99,6 +100,7 @@ definePageMeta({
 
 const loading = ref(true)
 const agendamentos = ref<any[]>([])
+const servicos = ref<any[]>([])
 const filtroData = ref(new Date().toISOString().split('T')[0])
 
 const fetchDados = async () => {
@@ -115,6 +117,9 @@ const fetchDados = async () => {
 
     const res = await $fetch<any[]>(`${config.public.apiBase}/admin/agendamentos`, { headers })
     agendamentos.value = res.sort((a,b) => new Date(a.horarioInicio).getTime() - new Date(b.horarioInicio).getTime())
+
+    const servs = await $fetch<any[]>(`${config.public.apiBase}/public/servicos`)
+    servicos.value = servs || []
   } catch (error) {
     console.error('Erro ao buscar reservas:', error)
   } finally {
@@ -137,6 +142,34 @@ const formatTime = (iso: string) => {
   if (!iso) return ''
   const d = new Date(iso)
   return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+}
+
+const formatarDataBr = (iso: string) => {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return d.toLocaleDateString('pt-BR')
+}
+
+const enviarWhatsapp = (agendamento: any) => {
+  if (!agendamento.telefoneCliente) {
+    Swal.fire('Aviso', 'Este cliente não possui telefone cadastrado.', 'info')
+    return
+  }
+  
+  let foneNumber = String(agendamento.telefoneCliente).replace(/\D/g, '')
+  if (foneNumber.length >= 10 && !foneNumber.startsWith('55')) {
+     foneNumber = '55' + foneNumber
+  }
+
+  const hora = formatTime(agendamento.horarioInicio)
+  const dia = formatarDataBr(agendamento.horarioInicio)
+  const servicoObj = servicos.value.find(s => s.id === agendamento.servicoId)
+  const nomeServico = servicoObj ? servicoObj.nome : 'o serviço'
+  
+  const texto = `Olá, entrando em contato para confirmar seu agendamento de ${nomeServico} às ${hora} do dia ${dia}.`
+  const encodedText = encodeURIComponent(texto)
+  
+  window.open(`https://wa.me/${foneNumber}?text=${encodedText}`, '_blank')
 }
 
 import Swal from 'sweetalert2'
