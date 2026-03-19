@@ -27,6 +27,7 @@ public class FirebaseConfig {
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(credentials)
+                    .setProjectId("agendamentosgk-20d98")
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
