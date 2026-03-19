@@ -1,6 +1,15 @@
 steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    dir: 'frontend'
+    id: 'Baixar Variaveis Secretariais'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'gcloud secrets versions access latest --secret=frontend-env > .env'
+
   - name: 'gcr.io/cloud-builders/docker'
     dir: 'frontend'
+    id: 'Construir Nova Imagem Docker'
     args: 
       - 'build'
       - '-t'
