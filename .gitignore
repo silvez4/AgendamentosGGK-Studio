@@ -37,3 +37,4 @@ backend/.env
 secret.json
 firebase-admin.json
 google-services.json
+serviceAccountKey.json

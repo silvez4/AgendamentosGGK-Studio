@@ -51,4 +51,14 @@ public class AgendamentoController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PutMapping("/admin/agendamentos/{id}/cancelar")
+    public ResponseEntity<?> cancelarAdmin(@PathVariable String id) {
+        try {
+            agendamentoService.cancelarAgendamento(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

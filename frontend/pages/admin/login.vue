@@ -1,45 +1,52 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans text-gray-900">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl font-extrabold text-blue-600">Admin Login</h2>
-        <p class="text-gray-500 mt-2 text-sm">Acesse o painel para gerenciar os agendamentos</p>
-      </div>
+  <v-container class="fill-height bg-grey-lighten-4" fluid>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" md="6" lg="4">
+        <v-card class="pa-8 rounded-xl" elevation="2">
+          <div class="text-center mb-8">
+            <h2 class="text-h4 font-weight-black text-primary mb-2">Admin Login</h2>
+            <p class="text-body-2 text-medium-emphasis">Acesse o painel para gerenciar os agendamentos</p>
+          </div>
 
-      <form @submit.prevent="handleLogin" class="space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Email Administrativo</label>
-          <input 
-            v-model="email" 
-            type="email" 
-            required 
-            placeholder="admin@exemplo.com"
-            class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          >
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Senha</label>
-          <input 
-            v-model="password" 
-            type="password" 
-            required
-            placeholder="••••••••"
-            class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          >
-        </div>
+          <v-form @submit.prevent="handleLogin">
+            <v-text-field
+              v-model="email"
+              label="Email Administrativo"
+              placeholder="admin@exemplo.com"
+              type="email"
+              variant="outlined"
+              color="primary"
+              class="mb-4"
+              required
+            ></v-text-field>
 
-        <button 
-          type="submit" 
-          :disabled="loading"
-          class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
-        >
-           <span v-if="!loading">Entrar</span>
-           <span v-else>Autenticando...</span>
-        </button>
-      </form>
-    </div>
-  </div>
+            <v-text-field
+              v-model="password"
+              label="Senha"
+              placeholder="••••••••"
+              type="password"
+              variant="outlined"
+              color="primary"
+              class="mb-6"
+              required
+            ></v-text-field>
+
+            <v-btn
+              type="submit"
+              color="primary"
+              size="x-large"
+              block
+              class="rounded-lg text-none font-weight-bold"
+              :loading="loading"
+              elevation="1"
+            >
+              Entrar
+            </v-btn>
+          </v-form>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">

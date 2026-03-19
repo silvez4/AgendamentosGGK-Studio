@@ -1,84 +1,83 @@
 <template>
-  <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[500px]">
-    <div class="flex justify-between items-center mb-6">
+  <v-card class="pa-6 rounded-xl" elevation="1" min-height="500">
+    <div class="d-flex justify-space-between align-center mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Serviços Oferecidos</h2>
-        <p class="text-gray-500 text-sm">Gerencie os serviços, preços, duração e intervalos.</p>
+        <h2 class="text-h5 font-weight-bold text-grey-darken-3">Serviços Oferecidos</h2>
+        <p class="text-medium-emphasis text-body-2 mt-1">Gerencie os serviços, preços, duração e intervalos.</p>
       </div>
-      <button @click="openModal(null)" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">
-        + Novo Serviço
-      </button>
+      <v-btn color="primary" prepend-icon="mdi-plus" size="large" @click="openModal(null)" class="rounded-lg text-none font-weight-bold">
+        Novo Serviço
+      </v-btn>
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
-            <th class="p-4 font-medium">Nome do Serviço</th>
-            <th class="p-4 font-medium">Duração (min)</th>
-            <th class="p-4 font-medium">Intervalo (min)</th>
-            <th class="p-4 font-medium">Preço</th>
-            <th class="p-4 font-medium text-right">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-           <tr v-if="loading" class="border-b border-gray-100"><td colspan="5" class="p-4 text-center">Carregando...</td></tr>
-           <tr v-else-if="servicos.length === 0" class="border-b border-gray-100"><td colspan="5" class="p-4 text-center text-gray-500">Nenhum serviço cadastrado.</td></tr>
-           <tr v-for="servico in servicos" :key="servico.id" class="border-b border-gray-100 hover:bg-gray-50">
-             <td class="p-4">{{ servico.nome }}</td>
-             <td class="p-4">{{ servico.duracaoMinutos }}</td>
-             <td class="p-4">{{ servico.intervaloMinutos || 0 }}</td>
-             <td class="p-4">{{ servico.moeda }} {{ servico.preco?.toFixed(2) }}</td>
-             <td class="p-4 text-right space-x-2">
-               <button @click="openModal(servico)" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Editar</button>
-               <button @click="deleteItem(servico.id)" class="text-red-500 hover:text-red-700 text-sm font-medium">Excluir</button>
-             </td>
-           </tr>
-        </tbody>
-      </table>
-    </div>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-left font-weight-bold">Nome do Serviço</th>
+          <th class="text-left font-weight-bold">Duração (min)</th>
+          <th class="text-left font-weight-bold">Intervalo (min)</th>
+          <th class="text-left font-weight-bold">Preço</th>
+          <th class="text-right font-weight-bold">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="loading">
+          <td colspan="5" class="text-center py-4">Carregando...</td>
+        </tr>
+        <tr v-else-if="servicos.length === 0">
+          <td colspan="5" class="text-center py-4 text-medium-emphasis">Nenhum serviço cadastrado.</td>
+        </tr>
+        <tr v-for="servico in servicos" :key="servico.id" class="hover-bg-grey-lighten-4">
+          <td class="font-weight-medium">{{ servico.nome }}</td>
+          <td>{{ servico.duracaoMinutos }}</td>
+          <td>{{ servico.intervaloMinutos || 0 }}</td>
+          <td>{{ servico.moeda }} {{ servico.preco?.toFixed(2) }}</td>
+          <td class="text-right">
+            <v-btn variant="text" color="primary" size="small" class="mr-2 font-weight-bold text-none" @click="openModal(servico)">Editar</v-btn>
+            <v-btn variant="text" color="error" size="small" class="font-weight-bold text-none" @click="deleteItem(servico.id)">Excluir</v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
 
-    <!-- Modal (Simplified here for demo logic) -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
-        <h3 class="text-xl font-bold mb-4">{{ form.id ? 'Editar Serviço' : 'Novo Serviço' }}</h3>
+    <!-- Modal -->
+    <v-dialog v-model="showModal" max-width="600" persistent>
+      <v-card class="rounded-xl pa-2">
+        <v-card-title class="text-h5 font-weight-bold mb-2">
+          {{ form.id ? 'Editar Serviço' : 'Novo Serviço' }}
+        </v-card-title>
         
-        <form @submit.prevent="saveItem" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Nome</label>
-            <input v-model="form.nome" type="text" required class="mt-1 block w-full px-3 py-2 border rounded-md">
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Preço</label>
-              <input v-model.number="form.preco" type="number" step="0.01" required class="mt-1 block w-full px-3 py-2 border rounded-md">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Moeda</label>
-              <select v-model="form.moeda" class="mt-1 block w-full px-3 py-2 border rounded-md">
-                <option value="BRL">R$ (BRL)</option>
-                <option value="USD">$ (USD)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Duração (minutos)</label>
-              <input v-model.number="form.duracaoMinutos" type="number" required class="mt-1 block w-full px-3 py-2 border rounded-md">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Intervalo Pós (minutos)</label>
-              <input v-model.number="form.intervaloMinutos" type="number" class="mt-1 block w-full px-3 py-2 border rounded-md">
-            </div>
-          </div>
-          
-          <div class="flex justify-end space-x-3 mt-6">
-            <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Salvar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        <v-card-text>
+          <v-form @submit.prevent="saveItem" id="servico-form">
+            <v-row dense>
+              <v-col cols="12">
+                <v-text-field v-model="form.nome" label="Nome" variant="outlined" density="comfortable" required></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field v-model.number="form.preco" label="Preço" type="number" step="0.01" variant="outlined" density="comfortable" required></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select v-model="form.moeda" :items="['BRL', 'USD']" label="Moeda" variant="outlined" density="comfortable"></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field v-model.number="form.duracaoMinutos" label="Duração (minutos)" type="number" variant="outlined" density="comfortable" required></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field v-model.number="form.intervaloMinutos" label="Intervalo Pós (minutos)" type="number" variant="outlined" density="comfortable"></v-text-field>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        
+        <v-card-actions class="px-6 pb-6 pt-0">
+          <v-spacer></v-spacer>
+          <v-btn color="grey-darken-1" variant="text" size="large" class="text-none" @click="showModal = false">Cancelar</v-btn>
+          <v-btn color="primary" type="submit" form="servico-form" variant="flat" size="large" class="rounded-lg px-6 font-weight-bold text-none">Salvar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -87,7 +86,7 @@ import { getAuth } from 'firebase/auth'
 
 const config = useRuntimeConfig()
 
-const getAuthHeaders = async () => {
+const getAuthHeaders = async (): Promise<Record<string, string>> => {
   const auth = getAuth()
   if (auth.currentUser) {
     const token = await auth.currentUser.getIdToken()

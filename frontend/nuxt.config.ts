@@ -1,13 +1,36 @@
-import tailwindcss from '@tailwindcss/vite'
-
 export default defineNuxtConfig({
+  compatibilityDate: '2026-03-18',
+
   devtools: { enabled: true },
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+
+  modules: [
+    'vuetify-nuxt-module'
+  ],
+
+  vuetify: {
+    vuetifyOptions: {
+      theme: {
+        defaultTheme: 'studioTheme',
+        themes: {
+          studioTheme: {
+            dark: false,
+            colors: {
+              background: '#F2E8DF',
+              surface: '#FFFFFF',
+              primary: '#713b28',
+              secondary: '#8d5642',
+              accent: '#5a2e1d',
+              error: '#B00020',
+              info: '#2196F3',
+              success: '#4CAF50',
+              warning: '#FB8C00',
+            }
+          }
+        }
+      }
+    }
   },
-  css: ['~/assets/css/main.css'],
+
   runtimeConfig: {
     public: {
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,

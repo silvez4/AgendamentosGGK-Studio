@@ -1,87 +1,80 @@
 <template>
-  <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[500px]">
-    <div class="flex justify-between items-center mb-6">
+  <v-card class="pa-6 rounded-xl" elevation="1" min-height="500">
+    <div class="d-flex justify-space-between align-center mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Organizar Agenda</h2>
-        <p class="text-gray-500 text-sm">Defina seus dias de trabalho, janelas de horários e dias de exceção.</p>
+        <h2 class="text-h5 font-weight-bold text-grey-darken-3">Organizar Agenda</h2>
+        <p class="text-medium-emphasis text-body-2 mt-1">Defina seus dias de trabalho, janelas de horários e dias de exceção.</p>
       </div>
-      <button @click="saveConfig" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition" :disabled="loading">
-        {{ loading ? 'Salvando...' : 'Salvar Configuração' }}
-      </button>
+      <v-btn color="primary" size="large" @click="saveConfig" :loading="loading" class="rounded-lg text-none font-weight-bold">
+        Salvar Configuração
+      </v-btn>
     </div>
 
-    <div class="space-y-8">
-      <!-- Dias da Semana -->
-      <section>
-        <h3 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Semana Padrão</h3>
-        <div class="space-y-6">
-          <div v-for="(dia, index) in diasSemana" :key="dia.diaSemana" class="flex flex-col md:flex-row md:items-start gap-4 p-4 border rounded-lg bg-gray-50">
-            <div class="w-48 flex items-center space-x-3">
-              <input type="checkbox" v-model="dia.ativo" class="h-5 w-5 text-blue-600 rounded">
-              <span class="font-medium" :class="dia.ativo ? 'text-gray-800' : 'text-gray-400'">{{ getNomeDia(dia.diaSemana) }}</span>
-            </div>
-            
-            <div class="flex-1 space-y-3" v-if="dia.ativo">
-               <div v-for="(janela, jIndex) in dia.janelas" :key="jIndex" class="flex items-center space-x-3">
-                  <input type="time" v-model="janela.inicio" required class="px-3 py-1.5 border rounded-md shadow-sm w-32">
-                  <span class="text-gray-500">até</span>
-                  <input type="time" v-model="janela.fim" required class="px-3 py-1.5 border rounded-md shadow-sm w-32">
-                  <button @click="removerJanela(dia, jIndex)" class="text-red-500 hover:text-red-700 p-1" title="Remover Horário">
-                    ✕
-                  </button>
-               </div>
-               <button @click="addJanela(dia)" class="text-sm text-blue-600 font-medium hover:text-blue-800">+ Adicionar Turno</button>
-            </div>
-            <div v-else class="flex-1 text-gray-400 italic text-sm py-2">Sem expediente.</div>
-          </div>
-        </div>
-      </section>
+    <!-- Dias da Semana -->
+    <div class="mt-8 mb-4 border-b pb-2">
+      <h3 class="text-h6 font-weight-bold text-grey-darken-2">Semana Padrão</h3>
+    </div>
+    
+    <div class="mb-10">
+      <v-card v-for="(dia, index) in diasSemana" :key="dia.diaSemana" class="mb-4 pa-4 bg-grey-lighten-4 rounded-lg" variant="flat" border>
+        <v-row align="center">
+          <v-col cols="12" md="3" class="d-flex align-center">
+            <v-checkbox v-model="dia.ativo" :label="getNomeDia(dia.diaSemana)" color="primary" hide-details class="font-weight-medium" density="compact"></v-checkbox>
+          </v-col>
+          
+          <v-col cols="12" md="9" v-if="dia.ativo">
+             <div v-for="(janela, jIndex) in dia.janelas" :key="jIndex" class="d-flex align-center mb-2 flex-wrap gap-2">
+                <v-text-field v-model="janela.inicio" type="time" density="compact" variant="outlined" hide-details class="max-w-[150px] bg-white"></v-text-field>
+                <span class="text-medium-emphasis mx-2">até</span>
+                <v-text-field v-model="janela.fim" type="time" density="compact" variant="outlined" hide-details class="max-w-[150px] bg-white"></v-text-field>
+                <v-btn icon="mdi-close" variant="text" color="error" size="small" @click="removerJanela(dia, jIndex)" class="ml-2"></v-btn>
+             </div>
+             <v-btn variant="text" color="primary" size="small" class="mt-2 text-none font-weight-bold" prepend-icon="mdi-plus" @click="addJanela(dia)">Adicionar Turno</v-btn>
+          </v-col>
+          <v-col cols="12" md="9" v-else>
+             <div class="text-medium-emphasis font-italic text-body-2">Sem expediente.</div>
+          </v-col>
+        </v-row>
+      </v-card>
+    </div>
 
-      <!-- Exceções -->
-      <section>
-        <div class="flex justify-between items-center mb-4 border-b pb-2">
-           <h3 class="text-lg font-semibold text-gray-700">Exceções (Feriados, Férias ou Horários Especiais)</h3>
-           <button @click="addExcecao" class="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded font-medium hover:bg-gray-300">
-             + Nova Exceção
-           </button>
-        </div>
-        
-        <div v-if="excecoes.length === 0" class="text-gray-500 text-sm text-center py-4 border rounded-lg border-dashed">
-          Nenhuma data de exceção cadastrada.
-        </div>
+    <!-- Exceções -->
+    <div class="d-flex justify-space-between align-center border-b pb-2 mb-4">
+       <h3 class="text-h6 font-weight-bold text-grey-darken-2">Exceções</h3>
+       <v-btn color="grey-darken-1" variant="tonal" size="small" class="text-none font-weight-bold" prepend-icon="mdi-calendar-plus" @click="addExcecao">
+         Nova Exceção
+       </v-btn>
+    </div>
+    
+    <div v-if="excecoes.length === 0" class="text-center py-8 border-dashed rounded-lg bg-grey-lighten-5 mb-8">
+      <div class="text-medium-emphasis text-body-2">Nenhuma data de exceção cadastrada.</div>
+    </div>
 
-        <div class="space-y-4">
-           <div v-for="(exc, eIndex) in excecoes" :key="eIndex" class="p-4 border border-orange-200 bg-orange-50 rounded-lg flex flex-col md:flex-row gap-4">
-              <div class="w-48 space-y-2">
-                 <label class="block text-xs font-semibold text-gray-600 uppercase">Data</label>
-                 <input type="date" v-model="exc.data" required class="w-full px-3 py-1.5 border rounded-md shadow-sm">
-                 <div class="flex items-center space-x-2 mt-2">
-                   <input type="checkbox" v-model="exc.bloqueadoODiaTodo" :id="'block_'+eIndex">
-                   <label :for="'block_'+eIndex" class="text-sm text-gray-700">Folga o dia todo</label>
-                 </div>
-              </div>
+    <v-card v-for="(exc, eIndex) in excecoes" :key="eIndex" class="mb-4 pa-4 bg-orange-lighten-5 border-orange-lighten-3 rounded-lg" variant="outlined">
+      <v-row>
+        <v-col cols="12" md="4">
+           <div class="text-caption font-weight-bold text-grey-darken-1 text-uppercase mb-1">Data</div>
+           <v-text-field v-model="exc.data" type="date" density="compact" variant="outlined" hide-details class="bg-white mb-3"></v-text-field>
+           <v-checkbox v-model="exc.bloqueadoODiaTodo" label="Folga o dia todo" color="primary" hide-details density="compact"></v-checkbox>
+        </v-col>
 
-              <div class="flex-1" v-if="!exc.bloqueadoODiaTodo">
-                 <label class="block text-xs font-semibold text-gray-600 uppercase mb-2">Horários Específicos para esse dia</label>
-                 <div class="space-y-3">
-                   <div v-for="(janela, jIndex) in exc.janelasDisponiveis" :key="jIndex" class="flex items-center space-x-3">
-                      <input type="time" v-model="janela.inicio" required class="px-3 py-1.5 border rounded-md shadow-sm w-32">
-                      <span class="text-gray-500">até</span>
-                      <input type="time" v-model="janela.fim" required class="px-3 py-1.5 border rounded-md shadow-sm w-32">
-                      <button @click="removerJanelaExc(exc, jIndex)" class="text-red-500 hover:text-red-700 p-1">✕</button>
-                   </div>
-                   <button @click="addJanelaExc(exc)" class="text-sm text-blue-600 font-medium hover:text-blue-800">+ Adicionar Turno</button>
-                 </div>
-              </div>
-              <div class="flex items-start">
-                 <button @click="removerExcecao(eIndex)" class="text-red-500 hover:text-red-700 font-medium text-sm mt-6">Remover Exceção</button>
-              </div>
+        <v-col cols="12" md="6" v-if="!exc.bloqueadoODiaTodo">
+           <div class="text-caption font-weight-bold text-grey-darken-1 text-uppercase mb-2">Horários Específicos</div>
+           <div v-for="(janela, jIndex) in exc.janelasDisponiveis" :key="jIndex" class="d-flex align-center mb-2 flex-wrap gap-2">
+              <v-text-field v-model="janela.inicio" type="time" density="compact" variant="outlined" hide-details class="max-w-[150px] bg-white"></v-text-field>
+              <span class="text-medium-emphasis mx-2">até</span>
+              <v-text-field v-model="janela.fim" type="time" density="compact" variant="outlined" hide-details class="max-w-[150px] bg-white"></v-text-field>
+              <v-btn icon="mdi-close" variant="text" color="error" size="small" @click="removerJanelaExc(exc, jIndex)" class="ml-2"></v-btn>
            </div>
-        </div>
-      </section>
-
-    </div>
-  </div>
+           <v-btn variant="text" color="primary" size="small" class="mt-2 text-none font-weight-bold" prepend-icon="mdi-plus" @click="addJanelaExc(exc)">Adicionar Turno</v-btn>
+        </v-col>
+        
+        <v-col cols="12" md="2" class="d-flex align-start justify-end">
+           <v-btn color="error" variant="text" size="small" class="text-none font-weight-bold mt-sm-6" @click="removerExcecao(eIndex)">Remover</v-btn>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -90,7 +83,7 @@ import { getAuth } from 'firebase/auth'
 
 const config = useRuntimeConfig()
 
-const getAuthHeaders = async () => {
+const getAuthHeaders = async (): Promise<Record<string, string>> => {
   const auth = getAuth()
   if (auth.currentUser) {
     const token = await auth.currentUser.getIdToken()

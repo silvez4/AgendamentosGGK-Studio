@@ -158,7 +158,42 @@ public class AgendamentoService {
         DocumentReference docRef = getFirestore().collection(COLLECTION_NAME).document(agendamento.getId());
         ApiFuture<WriteResult> result = docRef.set(agendamento);
         result.get();
+
+        // Integração para o Firebase "Trigger Email" extension
+        // Vai adicionar passivamente um doc a coleção "mail", pro firebase disparar
+        try {
+            Servico s = servicoService.listarServicos().stream().filter(sv -> sv.getId().equals(agendamento.getServicoId())).findFirst().orElse(null);
+            String nomeServico = s != null ? s.getNome() : agendamento.getServicoId();
+
+            String dataHora = agendamento.getHorarioInicio() != null ? agendamento.getHorarioInicio().substring(0, 16).replace("T", " às ") : "";
+
+            java.util.Map<String, Object> mailData = new java.util.HashMap<>();
+            mailData.put("to", java.util.Arrays.asList("studioanabruno@gmail.com", agendamento.getEmailCliente()));
+            
+            java.util.Map<String, Object> messageData = new java.util.HashMap<>();
+            messageData.put("subject", "Agendamento Realizado " + dataHora);
+            messageData.put("html", "<h3>Novo Agendamento Realizado!</h3>" +
+                    "<p><b>Serviço:</b> " + nomeServico + "</p>" +
+                    "<p><b>Data:</b> " + dataHora + "</p>" +
+                    "<p><b>Cliente:</b> " + agendamento.getNomeCliente() + "</p>" +
+                    "<p><b>WhatsApp:</b> " + agendamento.getTelefoneCliente() + "</p>" +
+                    "<p><b>E-mail Contato:</b> " + agendamento.getEmailCliente() + "</p>");
+            
+            mailData.put("message", messageData);
+            com.google.cloud.firestore.DocumentReference resultRef = getFirestore().collection("mail").add(mailData).get();
+            System.out.println("Trigger Email adicionado com sucesso no Firebase: " + resultRef.getId());
+        } catch (Exception e) {
+            System.err.println("Falha ao registrar trigger de email: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         return agendamento;
+    }
+
+    public void cancelarAgendamento(String id) throws Exception {
+        DocumentReference docRef = getFirestore().collection(COLLECTION_NAME).document(id);
+        ApiFuture<WriteResult> result = docRef.update("status", "CANCELADO");
+        result.get();
     }
 
     public List<Agendamento> listarAgendamentosAdmin() throws ExecutionException, InterruptedException {
